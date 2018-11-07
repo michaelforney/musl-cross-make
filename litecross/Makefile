@@ -55,6 +55,7 @@ MAKE += MULTILIB_OSDIRNAMES=
 MAKE += INFO_DEPS= infodir=
 MAKE += ac_cv_prog_lex_root=lex.yy.c
 MAKE += MAKEINFO=false
+MAKE += STMP_FIXINC=
 
 FULL_BINUTILS_CONFIG = \
 	$(COMMON_CONFIG) $(BINUTILS_CONFIG) $(TOOLCHAIN_CONFIG) \
@@ -107,7 +108,7 @@ obj_gcc/.lc_configured: obj_binutils/.lc_built
 else
 SYSROOT = /
 FULL_BINUTILS_CONFIG += --host=$(HOST)
-FULL_GCC_CONFIG += --host=$(HOST)
+FULL_GCC_CONFIG += --host=$(HOST) --with-native-system-header-dir=/include
 MUSL_VARS = 
 endif
 
