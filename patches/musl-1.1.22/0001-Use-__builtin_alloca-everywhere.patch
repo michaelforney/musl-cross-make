@@ -1,0 +1,26 @@
+From 5bca5f64560e4c683645d273b64d442e4cafc5ce Mon Sep 17 00:00:00 2001
+From: Michael Forney <mforney@mforney.org>
+Date: Tue, 21 May 2019 13:57:23 -0700
+Subject: [PATCH] Use __builtin_alloca everywhere
+
+---
+ include/alloca.h | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/include/alloca.h b/include/alloca.h
+index d2e6f1c6..b8d183d1 100644
+--- a/include/alloca.h
++++ b/include/alloca.h
+@@ -10,9 +10,7 @@ extern "C" {
+ 
+ void *alloca(size_t);
+ 
+-#ifdef __GNUC__
+ #define alloca __builtin_alloca
+-#endif
+ 
+ #ifdef __cplusplus
+ }
+-- 
+2.20.1
+
