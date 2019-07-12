@@ -1,0 +1,67 @@
+From d3c402e683a74e55dd3d2de74d06006f77da20c8 Mon Sep 17 00:00:00 2001
+From: Michael Forney <mforney@mforney.org>
+Date: Sun, 7 Jul 2019 21:15:16 -0700
+Subject: [PATCH] Avoid pointer arithmetic on `void *`
+
+---
+ include/uapi/linux/netfilter_arp/arp_tables.h  | 2 +-
+ include/uapi/linux/netfilter_bridge/ebtables.h | 2 +-
+ include/uapi/linux/netfilter_ipv4/ip_tables.h  | 2 +-
+ include/uapi/linux/netfilter_ipv6/ip6_tables.h | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/include/uapi/linux/netfilter_arp/arp_tables.h b/include/uapi/linux/netfilter_arp/arp_tables.h
+index a2a0927d9bd6..e4f53fbb4ac2 100644
+--- a/include/uapi/linux/netfilter_arp/arp_tables.h
++++ b/include/uapi/linux/netfilter_arp/arp_tables.h
+@@ -199,7 +199,7 @@ struct arpt_get_entries {
+ /* Helper functions */
+ static __inline__ struct xt_entry_target *arpt_get_target(struct arpt_entry *e)
+ {
+-	return (void *)e + e->target_offset;
++	return (void *)((char *)e + e->target_offset);
+ }
+ 
+ /*
+diff --git a/include/uapi/linux/netfilter_bridge/ebtables.h b/include/uapi/linux/netfilter_bridge/ebtables.h
+index 3b86c14ea49d..8b342fe50b76 100644
+--- a/include/uapi/linux/netfilter_bridge/ebtables.h
++++ b/include/uapi/linux/netfilter_bridge/ebtables.h
+@@ -194,7 +194,7 @@ struct ebt_entry {
+ static __inline__ struct ebt_entry_target *
+ ebt_get_target(struct ebt_entry *e)
+ {
+-	return (void *)e + e->target_offset;
++	return (void *)((char *)e + e->target_offset);
+ }
+ 
+ /* {g,s}etsockopt numbers */
+diff --git a/include/uapi/linux/netfilter_ipv4/ip_tables.h b/include/uapi/linux/netfilter_ipv4/ip_tables.h
+index 6aaeb14bfce1..e63c10eba668 100644
+--- a/include/uapi/linux/netfilter_ipv4/ip_tables.h
++++ b/include/uapi/linux/netfilter_ipv4/ip_tables.h
+@@ -222,7 +222,7 @@ struct ipt_get_entries {
+ static __inline__ struct xt_entry_target *
+ ipt_get_target(struct ipt_entry *e)
+ {
+-	return (void *)e + e->target_offset;
++	return (void *)((char *)e + e->target_offset);
+ }
+ 
+ /*
+diff --git a/include/uapi/linux/netfilter_ipv6/ip6_tables.h b/include/uapi/linux/netfilter_ipv6/ip6_tables.h
+index 031d0a43bed2..b9dbf1ed7ba4 100644
+--- a/include/uapi/linux/netfilter_ipv6/ip6_tables.h
++++ b/include/uapi/linux/netfilter_ipv6/ip6_tables.h
+@@ -262,7 +262,7 @@ struct ip6t_get_entries {
+ static __inline__ struct xt_entry_target *
+ ip6t_get_target(struct ip6t_entry *e)
+ {
+-	return (void *)e + e->target_offset;
++	return (void *)((char *)e + e->target_offset);
+ }
+ 
+ /*
+-- 
+2.22.0
+
