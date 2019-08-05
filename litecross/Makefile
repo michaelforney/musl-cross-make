@@ -58,6 +58,7 @@ MAKE += MAKEINFO=false
 MAKE += STMP_FIXINC=
 
 FULL_BINUTILS_CONFIG = \
+	--disable-separate-code \
 	$(COMMON_CONFIG) $(BINUTILS_CONFIG) $(TOOLCHAIN_CONFIG) \
 	--disable-werror \
 	--target=$(TARGET) --prefix= \
