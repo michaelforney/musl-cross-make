@@ -1,0 +1,24 @@
+From c07b2f033879efdd3b40d5952eebb69d601294c8 Mon Sep 17 00:00:00 2001
+From: Michael Forney <mforney@mforney.org>
+Date: Mon, 17 Jun 2019 13:32:00 -0700
+Subject: [PATCH] Add CXX_FOR_BUILD to HOST_EXPORTS
+
+---
+ Makefile.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Makefile.in b/Makefile.in
+index 64e091ba71d..27172719016 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -198,6 +198,7 @@ HOST_EXPORTS = \
+ 	AR="$(AR)"; export AR; \
+ 	AS="$(AS)"; export AS; \
+ 	CC_FOR_BUILD="$(CC_FOR_BUILD)"; export CC_FOR_BUILD; \
++	CXX_FOR_BUILD="$(CXX_FOR_BUILD)"; export CXX_FOR_BUILD; \
+ 	DLLTOOL="$(DLLTOOL)"; export DLLTOOL; \
+ 	LD="$(LD)"; export LD; \
+ 	LDFLAGS="$(STAGE1_LDFLAGS) $(LDFLAGS)"; export LDFLAGS; \
+-- 
+2.20.1
+
