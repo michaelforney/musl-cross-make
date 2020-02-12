@@ -58,12 +58,20 @@
 
 # COMMON_CONFIG += CFLAGS="-g0 -Os" CXXFLAGS="-g0 -Os" LDFLAGS="-s"
 
-# Recommended options for faster/simpler build:
+# Options you can add for faster/simpler build at the expense of features:
 
 # COMMON_CONFIG += --disable-nls
-# GCC_CONFIG += --enable-languages=c,c++
 # GCC_CONFIG += --disable-libquadmath --disable-decimal-float
-# GCC_CONFIG += --disable-multilib
+# GCC_CONFIG += --disable-libitm
+# GCC_CONFIG += --disable-fixed-point
+# GCC_CONFIG += --disable-lto
+
+# By default C and C++ are the only languages enabled, and these are
+# the only ones tested and known to be supported. You can uncomment the
+# following and add other languages if you want to try getting them to
+# work too.
+
+# GCC_CONFIG += --enable-languages=c,c++
 
 # You can keep the local build path out of your toolchain binaries and
 # target libraries with the following, but then gdb needs to be told

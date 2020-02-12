@@ -2,13 +2,13 @@
 SOURCES = sources
 
 CONFIG_SUB_REV = 3d5db9ebe860
-BINUTILS_VER = 2.32
-GCC_VER = 8.3.0
+BINUTILS_VER = 2.33.1
+GCC_VER = 9.2.0
 MUSL_VER = 1.1.24
 GMP_VER = 6.1.2
 MPC_VER = 1.1.0
 MPFR_VER = 4.0.2
-LINUX_VER = 4.4.10
+LINUX_VER = headers-4.19.88
 
 GNU_SITE = https://ftp.gnu.org/pub/gnu
 GCC_SITE = $(GNU_SITE)/gcc
@@ -25,6 +25,8 @@ LINUX_SITE = https://cdn.kernel.org/pub/linux/kernel
 LINUX_HEADERS_SITE = http://ftp.barfooze.de/pub/sabotage/tarballs/
 
 DL_CMD = wget -c -O
+
+COWPATCH = $(PWD)/cowpatch.sh
 
 HOST = $(if $(NATIVE),$(TARGET))
 BUILD_DIR = build/$(if $(HOST),$(HOST),local)/$(TARGET)
@@ -97,38 +99,49 @@ musl-git-%:
 	cd $@.tmp && git fsck
 	mv $@.tmp $@
 
-%: $(SOURCES)/%.tar.gz | $(SOURCES)/config.sub
+%.orig: $(SOURCES)/%.tar.gz
+	case "$@" in */*) exit 1 ;; esac
 	rm -rf $@.tmp
 	mkdir $@.tmp
 	( cd $@.tmp && tar zxvf - ) < $<
-	test ! -d patches/$@ || cat patches/$@/* | ( cd $@.tmp/$@ && patch -p1 )
-	test ! -f $@.tmp/$@/config.sub || cp -f $(SOURCES)/config.sub $@.tmp/$@
 	rm -rf $@
-	touch $@.tmp/$@
-	mv $@.tmp/$@ $@
+	touch $@.tmp/$(patsubst %.orig,%,$@)
+	mv $@.tmp/$(patsubst %.orig,%,$@) $@
 	rm -rf $@.tmp
 
-%: $(SOURCES)/%.tar.bz2 | $(SOURCES)/config.sub
+%.orig: $(SOURCES)/%.tar.bz2
+	case "$@" in */*) exit 1 ;; esac
 	rm -rf $@.tmp
 	mkdir $@.tmp
 	( cd $@.tmp && tar jxvf - ) < $<
-	test ! -d patches/$@ || cat patches/$@/* | ( cd $@.tmp/$@ && patch -p1 )
-	test ! -f $@.tmp/$@/config.sub || cp -f $(SOURCES)/config.sub $@.tmp/$@
 	rm -rf $@
-	touch $@.tmp/$@
-	mv $@.tmp/$@ $@
+	touch $@.tmp/$(patsubst %.orig,%,$@)
+	mv $@.tmp/$(patsubst %.orig,%,$@) $@
 	rm -rf $@.tmp
 
-%: $(SOURCES)/%.tar.xz | $(SOURCES)/config.sub
+%.orig: $(SOURCES)/%.tar.xz
+	case "$@" in */*) exit 1 ;; esac
 	rm -rf $@.tmp
 	mkdir $@.tmp
 	( cd $@.tmp && tar Jxvf - ) < $<
-	test ! -d patches/$@ || cat patches/$@/* | ( cd $@.tmp/$@ && patch -p1 )
-	test ! -f $@.tmp/$@/config.sub || cp -f $(SOURCES)/config.sub $@.tmp/$@
 	rm -rf $@
-	touch $@.tmp/$@
-	mv $@.tmp/$@ $@
+	touch $@.tmp/$(patsubst %.orig,%,$@)
+	mv $@.tmp/$(patsubst %.orig,%,$@) $@
 	rm -rf $@.tmp
+
+%: %.orig | $(SOURCES)/config.sub
+	case "$@" in */*) exit 1 ;; esac
+	rm -rf $@.tmp
+	mkdir $@.tmp
+	( cd $@.tmp && find ../$< -path '*/*/*' -prune -exec sh -c 'ln -s "$$@" .' ':' {} + )
+	test ! -d patches/$@ || cat patches/$@/* | ( cd $@.tmp && $(COWPATCH) -p1 )
+	test ! -f $</config.sub || ( rm -f $@.tmp/config.sub && cp -f $(SOURCES)/config.sub $@.tmp/ && chmod +x $@.tmp/config.sub )
+	rm -rf $@
+	mv $@.tmp $@
+
+
+# Add deps for all patched source dirs on their patchsets
+$(foreach dir,$(notdir $(basename $(basename $(basename $(wildcard hashes/*))))),$(eval $(dir): $$(wildcard patches/$(dir) patches/$(dir)/*)))
 
 extract_all: | $(SRC_DIRS)
 
@@ -170,3 +183,5 @@ install: | $(SRC_DIRS) $(BUILD_DIR) $(BUILD_DIR)/Makefile $(BUILD_DIR)/config.ma
 	cd $(BUILD_DIR) && $(MAKE) OUTPUT=$(OUTPUT) $@
 
 endif
+
+.SECONDARY:
